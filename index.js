@@ -11,7 +11,8 @@ const APP_PORT = process.env.APP_PORT;
 mongoose.Promise = global.Promise;
 mongoose.connect(`mongodb://localhost:${process.env.DB_PORT}/${process.env.DB_NAME}`, {
   useUnifiedTopology: true,
-  useNewUrlParser: true
+  useNewUrlParser: true,
+  useFindAndModify: false
 });
 
 app.listen(APP_PORT, () => {
