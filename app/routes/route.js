@@ -2,13 +2,18 @@
 
 const itemController = require('../controllers/item-controller.js');
 const cartController = require('../controllers/cart-controller.js');
+const itemDiscountController = require('../controllers/item-discount-controller');
+const cartDiscountController = require('../controllers/cart-discount-controller');
+const checkoutController = require('../controllers/checkout-controller');
 
-const rv=require('../middlewares/req-validator');
+const rv = require('../middlewares/req-validator');
 
 module.exports = function (app) {
-    app.post('/api/items', [rv.v],itemController.addItem);
+    app.post('/api/items', [rv.v], itemController.addItem);
     app.get('/api/items', itemController.getAllItems);
     app.post('/api/cart', cartController.createCart);
     app.put('/api/cart', cartController.addToCart);
-    // app.post('/api/order', cartController.calcOrder);
+    app.post('/api/item-discount', itemDiscountController.addItemDiscount);
+    app.post('/api/cart-discount',cartDiscountController.addCartDiscount);
+    app.post('/api/checkout', checkoutController.calculateCart);
 }
