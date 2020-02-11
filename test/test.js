@@ -29,72 +29,140 @@ test.before(async t => {
 
 test('ABC', async t => {
   const items = await request.get('/items');
-  const priceItemMap = items.body.map(item=>{
+  const priceItemMap = items.body.map(item => {
     return {
-      id:item._id,
-      price:item.price
+      id: item._id,
+      price: item.price,
+      name: item.name,
     }
-  }).sort((a,b)=>a.name>b.name);
-  const res=await request.post('/cart').send({itemId:priceItemMap[0].id});
-  const cartId=res.body._id;
-  await request.put('/cart').send({itemId:priceItemMap[1].id,cartId});
-  await request.put('/cart').send({itemId:priceItemMap[2].id,cartId});
-  const bill=(await request.post('/checkout').send({cartId})).body;
-  t.is(bill.postCartDiscountBill,100)
+  }).sort((a, b) => a.name > b.name);
+  const res = await request.post('/cart').send({
+    itemId: priceItemMap[0].id
+  });
+  const cartId = res.body._id;
+  await request.put('/cart').send({
+    itemId: priceItemMap[1].id,
+    cartId
+  });
+  await request.put('/cart').send({
+    itemId: priceItemMap[2].id,
+    cartId
+  });
+  const bill = (await request.post('/checkout').send({
+    cartId
+  })).body;
+  t.is(bill.postCartDiscountBill, 100)
 });
 
 test('BABAA', async t => {
   const items = await request.get('/items');
-  const priceItemMap = items.body.map(item=>{
+  const priceItemMap = items.body.map(item => {
     return {
-      id:item._id,
-      price:item.price
+      id: item._id,
+      price: item.price,
+      name: item.name,
     }
-  }).sort((a,b)=>a.name>b.name);
-  const res=await request.post('/cart').send({itemId:priceItemMap[1].id});
-  const cartId=res.body._id;
-  await request.put('/cart').send({itemId:priceItemMap[0].id,cartId});
-  await request.put('/cart').send({itemId:priceItemMap[1].id,cartId});
-  await request.put('/cart').send({itemId:priceItemMap[0].id,cartId});
-  await request.put('/cart').send({itemId:priceItemMap[0].id,cartId});
-  const bill=(await request.post('/checkout').send({cartId})).body;
-  t.is(bill.postCartDiscountBill,110)
+  }).sort((a, b) => a.name > b.name);
+  const res = await request.post('/cart').send({
+    itemId: priceItemMap[1].id
+  });
+  const cartId = res.body._id;
+  await request.put('/cart').send({
+    itemId: priceItemMap[0].id,
+    cartId
+  });
+  await request.put('/cart').send({
+    itemId: priceItemMap[1].id,
+    cartId
+  });
+  await request.put('/cart').send({
+    itemId: priceItemMap[0].id,
+    cartId
+  });
+  await request.put('/cart').send({
+    itemId: priceItemMap[0].id,
+    cartId
+  });
+  const bill = (await request.post('/checkout').send({
+    cartId
+  })).body;
+  t.is(bill.postCartDiscountBill, 110)
 });
 
 test('CBAADAB', async t => {
   const items = await request.get('/items');
-  const priceItemMap = items.body.map(item=>{
+  const priceItemMap = items.body.map(item => {
     return {
-      id:item._id,
-      price:item.price
+      id: item._id,
+      price: item.price,
+      name: item.name,
     }
-  }).sort((a,b)=>a.name>b.name);
-  const res=await request.post('/cart').send({itemId:priceItemMap[2].id});
-  const cartId=res.body._id;
-  await request.put('/cart').send({itemId:priceItemMap[1].id,cartId});
-  await request.put('/cart').send({itemId:priceItemMap[0].id,cartId});
-  await request.put('/cart').send({itemId:priceItemMap[0].id,cartId});
-  await request.put('/cart').send({itemId:priceItemMap[3].id,cartId});
-  await request.put('/cart').send({itemId:priceItemMap[0].id,cartId});
-  await request.put('/cart').send({itemId:priceItemMap[1].id,cartId});
-  const bill=(await request.post('/checkout').send({cartId})).body;
-  t.is(bill.postCartDiscountBill,155)
+  }).sort((a, b) => a.name > b.name);
+  const res = await request.post('/cart').send({
+    itemId: priceItemMap[2].id
+  });
+  const cartId = res.body._id;
+  await request.put('/cart').send({
+    itemId: priceItemMap[1].id,
+    cartId
+  });
+  await request.put('/cart').send({
+    itemId: priceItemMap[0].id,
+    cartId
+  });
+  await request.put('/cart').send({
+    itemId: priceItemMap[0].id,
+    cartId
+  });
+  await request.put('/cart').send({
+    itemId: priceItemMap[3].id,
+    cartId
+  });
+  await request.put('/cart').send({
+    itemId: priceItemMap[0].id,
+    cartId
+  });
+  await request.put('/cart').send({
+    itemId: priceItemMap[1].id,
+    cartId
+  });
+  const bill = (await request.post('/checkout').send({
+    cartId
+  })).body;
+  t.is(bill.postCartDiscountBill, 155)
 });
 
 test('CADAA', async t => {
   const items = await request.get('/items');
-  const priceItemMap = items.body.map(item=>{
+  const priceItemMap = items.body.map(item => {
     return {
-      id:item._id,
-      price:item.price
+      id: item._id,
+      price: item.price,
+      name: item.name,
     }
-  }).sort((a,b)=>a.name>b.name);
-  const res=await request.post('/cart').send({itemId:priceItemMap[2].id});
-  const cartId=res.body._id;
-  await request.put('/cart').send({itemId:priceItemMap[0].id,cartId});
-  await request.put('/cart').send({itemId:priceItemMap[3].id,cartId});
-  await request.put('/cart').send({itemId:priceItemMap[0].id,cartId});
-  await request.put('/cart').send({itemId:priceItemMap[0].id,cartId});
-  const bill=(await request.post('/checkout').send({cartId})).body;
-  t.is(bill.postCartDiscountBill,140)
+  }).sort((a, b) => a.name > b.name);
+  const res = await request.post('/cart').send({
+    itemId: priceItemMap[2].id
+  });
+  const cartId = res.body._id;
+  await request.put('/cart').send({
+    itemId: priceItemMap[0].id,
+    cartId
+  });
+  await request.put('/cart').send({
+    itemId: priceItemMap[3].id,
+    cartId
+  });
+  await request.put('/cart').send({
+    itemId: priceItemMap[0].id,
+    cartId
+  });
+  await request.put('/cart').send({
+    itemId: priceItemMap[0].id,
+    cartId
+  });
+  const bill = (await request.post('/checkout').send({
+    cartId
+  })).body;
+  t.is(bill.postCartDiscountBill, 140)
 });

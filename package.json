@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node index.js",
     "watch": "npx nodemon index.js",
-    "test": "npx ava test/*.js"
+    "test": "npx ava test/*.js",
+    "seed": "node seed.js"
   },
   "keywords": [],
   "author": "Agni R",

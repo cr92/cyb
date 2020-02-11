@@ -60,7 +60,7 @@ const calculateItemDiscount = async (noDiscountCart) => {
         d.count = (cartProps[key]).length;
         d.totalItemPrice = d.count * d.itemProps.price;
         d.discountRules = itemDiscountInfo.filter((each) => each.appliesTo.indexOf(key) > -1)
-        let discountFuncs = d.discountRules.map((rule) => interpretItemDiscountRule(rule))
+        let discountFuncs = d.discountRules.map((rule) => interpretItemDiscountRule(rule));
         d.discounts = discountFuncs.map(func => func(d));
         d.finalItemDiscount = _.max(d.discounts) || 0;
         d.finalItemPrice = d.totalItemPrice - d.finalItemDiscount;
