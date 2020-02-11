@@ -11,9 +11,12 @@ const calculateCartDiscount = async (itemDiscountedCart) => {
         isActive: true
     });
     let decoFuncs = cartDiscountRules.map(rule => interpretCartDiscountRule(rule));
-    return decoFuncs.map(func => func(itemDiscountedCart));
+    // not using discount composition, just applying various active rules
+    // and return sorted in descending discounts
+    return (decoFuncs.map(func => func(itemDiscountedCart))).sort((a, b) => a.postCartDiscountBill < b.postCartDiscountBill);
 }
 
+// designed to handle composition of cart discount rules f(g(h(cart)))
 const interpretCartDiscountRule = (cartDiscountRule) => {
     let {
         ruleType,
@@ -38,11 +41,13 @@ const interpretCartDiscountRule = (cartDiscountRule) => {
 }
 
 const calculateItemDiscount = async (noDiscountCart) => {
-    let postItemDiscountCart = {preCartDiscountBill: 0};
+    let postItemDiscountCart = {
+        preCartDiscountBill: 0
+    };
     let itemDiscountInfo = await itemDiscount.find({
         isActive: true
     });
-    
+
     let uniqs = _.groupBy(noDiscountCart.items, '_id');
     for (let key in uniqs) {
         let d = uniqs[key][0];
@@ -71,21 +76,26 @@ const interpretItemDiscountRule = (itemDiscountRule) => {
         discountAmount,
         multipleOf
     } = itemDiscountRule;
-    if(ruleType=='MULTIPLE'){
-        if(discountType=='FLAT'){
+    if (ruleType == 'MULTIPLE') {
+        if (discountType == 'FLAT') {
 
         }
     }
 }
 
 const calculateCart = async (req, res, next) => {
-    const {cartId} = req.body;
+    const {
+        cartId
+    } = req.body;
     const noDiscountCart = await cart.findById(cartId);
     if (!noDiscountCart) {
         return next(new Error('Invalid cart cannot be checked out'));
     }
-    const postItemDiscountCart = await calculateItemDiscount(noDiscountCart); 
-    const postCartDiscountCart = (await calculateCartDiscount(postItemDiscountCart))[0];
+    if (noDiscountCart.items.length === 0) {
+        return next(new Error('Cannot check out empty cart'));
+    }
+    const postItemDiscountCart = await calculateItemDiscount(noDiscountCart);
+    const postCartDiscountCart = (await calculateCartDiscount(postItemDiscountCart))[0]; //apply max discount
     res.send(postCartDiscountCart);
 }
 
