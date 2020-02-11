@@ -73,8 +73,30 @@ function addToCartReqValidator(req, res, next) {
     next();
 }
 
+function calculateCartReqValidator(req, res, next) {
+    const calculateCartReqValidatorSchema = {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "type": "object",
+        "required": [
+            "cartId"
+        ],
+        "properties": {
+            "cartId": {
+                "type": "string",
+            }
+        },
+        "additionalProperties": false
+    };
+    const valid = ajv.validate(calculateCartReqValidatorSchema, req.body);
+    if (!valid) {
+        throw new Error("Invalid Request Body");
+    }
+    next();
+}
+
 module.exports = {
     addItemReqValidator,
     createCartReqValidator,
-    addToCartReqValidator
+    addToCartReqValidator,
+    calculateCartReqValidator
 }
