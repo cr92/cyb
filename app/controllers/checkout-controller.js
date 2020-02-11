@@ -10,9 +10,8 @@ const calculateCartDiscount = async (itemDiscountedCart) => {
     let cartDiscountRules = await cartDiscount.find({
         isActive: true
     });
-    let decoFuncs = cartDiscountRules.map(rule=>interpretCartDiscountRule(rule));
-    return decoFuncs.map(func=>func(itemDiscountedCart));
-    
+    let decoFuncs = cartDiscountRules.map(rule => interpretCartDiscountRule(rule));
+    return decoFuncs.map(func => func(itemDiscountedCart));
 }
 
 const interpretCartDiscountRule = (cartDiscountRule) => {
@@ -38,18 +37,13 @@ const interpretCartDiscountRule = (cartDiscountRule) => {
     }
 }
 
-const calculateCart = async (req, res, next) => {
-    const {
-        cartId
-    } = req.body;
-    let tmp = {
-        preCartDiscountBill: 0
-    };
+const calculateItemDiscount = async (noDiscountCart) => {
+    let postItemDiscountCart = {preCartDiscountBill: 0};
     let itemDiscountInfo = await itemDiscount.find({
         isActive: true
     });
-    let cartInfo = await cart.findById(cartId);
-    let uniqs = _.groupBy(cartInfo.items, '_id');
+    
+    let uniqs = _.groupBy(noDiscountCart.items, '_id');
     for (let key in uniqs) {
         let d = uniqs[key][0];
         d.count = (uniqs[key]).length;
@@ -63,17 +57,36 @@ const calculateCart = async (req, res, next) => {
         })
         d.finalItemDiscount = _.max(d.discounts) || 0;
         d.finalItemPrice = d.totalItemPrice - d.finalItemDiscount;
-        tmp[key] = d
-        tmp.preCartDiscountBill = tmp.preCartDiscountBill + d.finalItemPrice;
+        postItemDiscountCart[key] = d
+        postItemDiscountCart.preCartDiscountBill = postItemDiscountCart.preCartDiscountBill + d.finalItemPrice;
     }
-    let f=(await calculateCartDiscount(tmp))[0];
-    res.send(f);
+    return postItemDiscountCart;
+
+}
+
+const interpretItemDiscountRule = (itemDiscountRule) => {
+    let {
+        ruleType,
+        discountType,
+        discountAmount,
+        multipleOf
+    } = itemDiscountRule;
+    if(ruleType=='MULTIPLE'){
+        if(discountType=='FLAT'){
+
+        }
+    }
+}
+
+const calculateCart = async (req, res, next) => {
+    const {cartId} = req.body;
+    const noDiscountCart = await cart.findById(cartId);
+    const postItemDiscountCart = await calculateItemDiscount(noDiscountCart); 
+    const postCartDiscountCart = (await calculateCartDiscount(postItemDiscountCart))[0];
+    res.send(postCartDiscountCart);
 }
 
 
 module.exports = {
     calculateCart
 }
-
-
-// function multipleTypeDiscount()
