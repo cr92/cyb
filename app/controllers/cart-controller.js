@@ -27,7 +27,7 @@ module.exports = {
         const itemId = req.body.itemId;
         const itemInfo = await item.findById(itemId);
         if (!itemInfo) {
-            next(new Error('Invalid item cannot be added'));
+            return next(new Error('Invalid item cannot be added'));
         }
         cart.findOneAndUpdate({
                 _id: cartId

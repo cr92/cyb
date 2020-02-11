@@ -82,7 +82,7 @@ const calculateCart = async (req, res, next) => {
     const {cartId} = req.body;
     const noDiscountCart = await cart.findById(cartId);
     if (!noDiscountCart) {
-        next(new Error('Invalid cart cannot be checked out'));
+        return next(new Error('Invalid cart cannot be checked out'));
     }
     const postItemDiscountCart = await calculateItemDiscount(noDiscountCart); 
     const postCartDiscountCart = (await calculateCartDiscount(postItemDiscountCart))[0];

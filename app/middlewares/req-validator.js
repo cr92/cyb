@@ -94,9 +94,105 @@ function calculateCartReqValidator(req, res, next) {
     next();
 }
 
+function addCartDiscountReqValidator(req, res, next) {
+    const addCartDiscountReqValidatorSchema = {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "type": "object",
+        "required": [
+            "ruleName",
+            "minCartValue",
+            "discountAmount"
+        ],
+        "properties": {
+            "ruleName": {
+                "type": "string",
+            },
+            "minCartValue": {
+                "type": "integer",
+            },
+            "discountAmount": {
+                "type": "integer",
+            }
+        },
+        "additionalProperties": false
+    };
+    const valid = ajv.validate(addCartDiscountReqValidatorSchema, req.body);
+    if (!valid) {
+        throw new Error("Invalid Request Body");
+    }
+    next();
+}
+
+function addCartDiscountReqValidator(req, res, next) {
+    const addCartDiscountReqValidatorSchema = {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "type": "object",
+        "required": [
+            "ruleName",
+            "minCartValue",
+            "discountAmount"
+        ],
+        "properties": {
+            "ruleName": {
+                "type": "string",
+            },
+            "minCartValue": {
+                "type": "integer",
+            },
+            "discountAmount": {
+                "type": "integer",
+            }
+        },
+        "additionalProperties": false
+    };
+    const valid = ajv.validate(addCartDiscountReqValidatorSchema, req.body);
+    if (!valid) {
+        throw new Error("Invalid Request Body");
+    }
+    next();
+}
+
+function addItemDiscountReqValidator(req, res, next) {
+    const addItemDiscountReqValidatorSchema = {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "type": "object",
+        "required": [
+            "ruleName",
+            "multipleOf",
+            "discountAmount"
+        ],
+        "properties": {
+            "ruleName": {
+                "type": "string",
+            },
+            "multipleOf": {
+                "type": "integer",
+            },
+            "discountAmount": {
+                "type": "integer",
+            },
+            "appliesTo": {
+                "type": "array",
+                "items": {
+                    "type": "string"
+                },
+                "minItems": 1
+            }
+        },
+        "additionalProperties": false
+    };
+    const valid = ajv.validate(addItemDiscountReqValidatorSchema, req.body);
+    if (!valid) {
+        throw new Error("Invalid Request Body");
+    }
+    next();
+}
+
 module.exports = {
     addItemReqValidator,
     createCartReqValidator,
     addToCartReqValidator,
-    calculateCartReqValidator
+    calculateCartReqValidator,
+    addCartDiscountReqValidator,
+    addItemDiscountReqValidator
 }

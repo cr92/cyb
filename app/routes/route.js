@@ -13,7 +13,7 @@ module.exports = function (app) {
     app.get('/api/items', itemController.getAllItems);
     app.post('/api/cart', [rv.createCartReqValidator], cartController.createCart);
     app.put('/api/cart', [rv.addToCartReqValidator], cartController.addToCart);
-    app.post('/api/item-discount', [], itemDiscountController.addItemDiscount);
-    app.post('/api/cart-discount', [], cartDiscountController.addCartDiscount);
+    app.post('/api/item-discount', [rv.addItemDiscountReqValidator], itemDiscountController.addItemDiscount);
+    app.post('/api/cart-discount', [rv.addCartDiscountReqValidator], cartDiscountController.addCartDiscount);
     app.post('/api/checkout', [rv.calculateCartReqValidator], checkoutController.calculateCart);
 }
