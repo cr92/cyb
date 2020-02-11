@@ -23,6 +23,10 @@ const cartDiscountSchema = new Schema({
     isActive: {
         type: Boolean,
         default: true
+    },
+    minCartValue: {
+        type: Number,
+        required: true
     }
 });
 
