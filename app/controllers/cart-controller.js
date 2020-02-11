@@ -9,12 +9,15 @@ module.exports = {
         const itemId = req.body.itemId;
         item.findById(itemId)
             .then((itemInfo) => {
-                const c = new cart();
-                c.items.push(itemInfo);
-                return c.save()
+                if (itemInfo) {
+                    const c = new cart();
+                    c.items.push(itemInfo);
+                    return c.save();
+                }
+                throw new Error('Invalid item cannot be added');
             })
-            .then((d) => {
-                res.send(d);
+            .then((doc) => {
+                res.send(doc);
             })
             .catch(next)
     },
@@ -23,6 +26,9 @@ module.exports = {
         const cartId = req.body.cartId;
         const itemId = req.body.itemId;
         const itemInfo = await item.findById(itemId);
+        if (!itemInfo) {
+            next(new Error('Invalid item cannot be added'));
+        }
         cart.findOneAndUpdate({
                 _id: cartId
             }, {
@@ -33,11 +39,11 @@ module.exports = {
                 new: true
             })
             .then((result) => {
+                if (!result) {
+                    throw new Error('Cannot add items to invalid Cart')
+                }
                 res.send(result);
             })
             .catch(next)
     }
-
-    
-
 }

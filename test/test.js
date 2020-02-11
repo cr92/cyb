@@ -9,7 +9,7 @@ const supertest = require('supertest');
 
 const app = require('../app/app.js');
 
-const APP_PORT = process.env.APP_PORT;
+const APP_PORT = process.env.APP_TEST_PORT;
 let request;
 
 test.before(async t => {
