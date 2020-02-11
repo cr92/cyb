@@ -1,6 +1,11 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
+const {
+    FLAT,
+    MULTIPLE
+} = require('../const.js');
+
 const itemDiscountSchema = new Schema({
     ruleName: {
         type: String,
@@ -8,20 +13,20 @@ const itemDiscountSchema = new Schema({
     },
     ruleType: {
         type: String,
-        enum: ['MULTIPLE'],
-        default: 'MULTIPLE'
+        enum: [MULTIPLE],
+        default: MULTIPLE
     },
-    multipleOf:{
-        type:Number,
-        min:2,
-        max:5,
-        default:2
+    multipleOf: {
+        type: Number,
+        min: 2,
+        max: 5,
+        default: 2
     },
     appliesTo: [],
     discountType: {
         type: String,
-        enum: ['FLAT'],
-        default: 'FLAT'
+        enum: [FLAT],
+        default: FLAT
     },
     discountAmount: {
         type: Number,

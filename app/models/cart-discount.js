@@ -1,5 +1,9 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
+const {
+    BULK,
+    FLAT
+} = require('../const.js');
 
 const cartDiscountSchema = new Schema({
     ruleName: {
@@ -8,13 +12,13 @@ const cartDiscountSchema = new Schema({
     },
     ruleType: {
         type: String,
-        enum: ['BULK'],
-        default: 'BULK'
+        enum: [BULK],
+        default: BULK
     },
     discountType: {
         type: String,
-        enum: ['FLAT'],
-        default: 'FLAT'
+        enum: [FLAT],
+        default: FLAT
     },
     discountAmount: {
         type: Number,

@@ -5,6 +5,11 @@ const cart = require('../models/cart');
 const cartDiscount = require('../models/cart-discount');
 const itemDiscount = require('../models/item-discount');
 const _ = require('lodash');
+const {
+    BULK,
+    FLAT,
+    MULTIPLE
+} = require('../const.js');
 
 const calculateCartDiscount = async (itemDiscountedCart) => {
     let cartDiscountRules = await cartDiscount.find({
@@ -12,8 +17,8 @@ const calculateCartDiscount = async (itemDiscountedCart) => {
     });
     let decoFuncs = cartDiscountRules.map(rule => interpretCartDiscountRule(rule));
     // not using discount composition, just applying various active rules
-    // and return sorted in descending discounts
-    return (decoFuncs.map(func => func(itemDiscountedCart))).sort((a, b) => a.postCartDiscountBill < b.postCartDiscountBill);
+    // and return the cart with maximum discount
+    return ((decoFuncs.map(func => func(itemDiscountedCart))).sort((a, b) => a.postCartDiscountBill < b.postCartDiscountBill))[0];
 }
 
 // designed to handle composition of cart discount rules f(g(h(cart)))
@@ -24,8 +29,8 @@ const interpretCartDiscountRule = (cartDiscountRule) => {
         discountAmount,
         minCartValue
     } = cartDiscountRule;
-    if (ruleType === 'BULK') {
-        if (discountType === 'FLAT') {
+    if (ruleType === BULK) {
+        if (discountType === FLAT) {
             return (obj) => {
                 if (obj.postCartDiscountBill) {
                     discountAmount = obj.postCartDiscountBill >= minCartValue ? discountAmount : 0;
@@ -48,18 +53,15 @@ const calculateItemDiscount = async (noDiscountCart) => {
         isActive: true
     });
 
-    let uniqs = _.groupBy(noDiscountCart.items, '_id');
-    for (let key in uniqs) {
-        let d = uniqs[key][0];
-        d.count = (uniqs[key]).length;
-        d.totalItemPrice = d.count * d.price;
+    let cartProps = _.groupBy(noDiscountCart.items, '_id');
+    for (let key in cartProps) {
+        let d = {};
+        d.itemProps = cartProps[key][0];
+        d.count = (cartProps[key]).length;
+        d.totalItemPrice = d.count * d.itemProps.price;
         d.discountRules = itemDiscountInfo.filter((each) => each.appliesTo.indexOf(key) > -1)
-        d.discounts = d.discountRules.map((rule) => {
-            if (rule.ruleType == 'MULTIPLE') {
-                let bunches = parseInt(d.count / rule.multipleOf);
-                return bunches * rule.discountAmount;
-            }
-        })
+        let discountFuncs = d.discountRules.map((rule) => interpretItemDiscountRule(rule))
+        d.discounts = discountFuncs.map(func => func(d));
         d.finalItemDiscount = _.max(d.discounts) || 0;
         d.finalItemPrice = d.totalItemPrice - d.finalItemDiscount;
         postItemDiscountCart[key] = d
@@ -76,9 +78,12 @@ const interpretItemDiscountRule = (itemDiscountRule) => {
         discountAmount,
         multipleOf
     } = itemDiscountRule;
-    if (ruleType == 'MULTIPLE') {
-        if (discountType == 'FLAT') {
-
+    if (ruleType === MULTIPLE) {
+        if (discountType === FLAT) {
+            return (obj) => {
+                const bunches = parseInt(obj.count / multipleOf);
+                return bunches * discountAmount;
+            }
         }
     }
 }
@@ -95,7 +100,7 @@ const calculateCart = async (req, res, next) => {
         return next(new Error('Cannot check out empty cart'));
     }
     const postItemDiscountCart = await calculateItemDiscount(noDiscountCart);
-    const postCartDiscountCart = (await calculateCartDiscount(postItemDiscountCart))[0]; //apply max discount
+    const postCartDiscountCart = (await calculateCartDiscount(postItemDiscountCart));
     res.send(postCartDiscountCart);
 }
 
